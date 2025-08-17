@@ -26,12 +26,11 @@ impl Substitution {
         let mut enc_map: HashMap<char, char> = HashMap::new();
         let mut dec_map: HashMap<char, char> = HashMap::new();
 
-        for (i, c) in alphabet.chars().enumerate() {
-            enc_map.insert(c, sub_alphabets[i]);
-        }
+        let alphabet_vec = alphabet.chars().collect::<Vec<_>>();
 
-        for (i, c) in sub_alphabets.iter().enumerate() {
-            dec_map.insert(*c, alphabet.chars().nth(i).unwrap());
+        for (i, c) in alphabet_vec.iter().enumerate() {
+            enc_map.insert(*c, sub_alphabets[i]);
+            dec_map.insert(sub_alphabets[i], *c);
         }
 
         Substitution {
@@ -39,5 +38,35 @@ impl Substitution {
             enc_map,
             dec_map,
         }
+    }
+
+    pub fn encode(&self, string: String) -> String {
+        let enc_map = &self.enc_map;
+        let mut enc_string = String::new();
+
+        for c in string.to_ascii_uppercase().chars() {
+            if enc_map.contains_key(&c) {
+                enc_string.push(*enc_map.get(&c).unwrap());
+            } else {
+                enc_string.push(c);
+            }
+        }
+
+        enc_string
+    }
+
+    pub fn decode(&self, encoded: String) -> String {
+        let dec_map = &self.dec_map;
+        let mut dec_string = String::new();
+
+        for c in encoded.to_ascii_uppercase().chars() {
+            if dec_map.contains_key(&c) {
+                dec_string.push(*dec_map.get(&c).unwrap());
+            } else {
+                dec_string.push(c);
+            }
+        }
+
+        dec_string
     }
 }
